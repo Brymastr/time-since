@@ -1,0 +1,33 @@
+{
+  "name": "time-since",
+  "version": "0.0.1",
+  "description": "Calculate the time since a given date in the largest units possible.",
+  "main": "dist/index",
+  "scripts": {
+    "test": "node_modules/.bin/jest",
+    "test-watch": "node_modules/.bin/jest --watchAll",
+    "start": "node -r source-map-support/register dist/index",
+    "dev": "ts-node-dev --transpile-only --respawn src/index.ts",
+    "build": "rimraf dist && node_modules/typescript/bin/tsc"
+  },
+  "keywords": [
+    "moment",
+    "dates"
+  ],
+  "author": "Brycen Dorsay <dorsay@live.ca>",
+  "license": "MIT",
+  "dependencies": {
+    "moment": "2.27.0",
+    "source-map-support": "0.5.19"
+  },
+  "devDependencies": {
+    "@types/jest": "^25.2.2",
+    "jest": "^26.0.1",
+    "nodemon": "2.0.4",
+    "rimraf": "3.0.2",
+    "ts-jest": "26.1.4",
+    "ts-node": "8.10.2",
+    "ts-node-dev": "1.0.0-pre.50",
+    "typescript": "3.9.6"
+  }
+}

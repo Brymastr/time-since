@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "noImplicitAny": true,
+    "sourceMap": true,
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "outDir": "dist",
+    "module": "commonjs",
+    "target": "ES2020",
+    "baseUrl": "."
+  },
+  "include": ["src/*.ts"],
+  "exclude": ["src/*.test.ts"]
+}
