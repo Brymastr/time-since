@@ -3,6 +3,7 @@
     "alwaysStrict": true,
     "noImplicitAny": true,
     "sourceMap": true,
+    "declaration": true,
     "esModuleInterop": true,
     "moduleResolution": "node",
     "outDir": "dist",
