@@ -1,31 +1,33 @@
 import moment, { Moment } from 'moment';
+import { Options, DateParameter, Range } from './types';
 
-const ranges: moment.unitOfTime.Diff[] = [
-  'year',
-  'month',
-  'week',
-  'day',
-  'hour',
-  'minute',
-  'second',
-];
+const defaultRanges: Range[] = ['year', 'month', 'week', 'day', 'hour', 'minute'];
 
-export default function since(since: string | Moment, until: string | Moment = moment()) {
-  const m = moment(since);
-  const u = moment(until);
+export default function since(
+  since: DateParameter,
+  until: DateParameter = moment(),
+  options?: Options,
+) {
+  const sinceMoment = moment(since);
+  const untilMoment = moment(until);
+  const ranges = options?.ranges ?? defaultRanges;
 
-  let message: string | null = null;
+  const message = theActualWork(sinceMoment, untilMoment, ranges);
+
+  return message;
+}
+
+function theActualWork(since: Moment, until: Moment, ranges: moment.unitOfTime.Diff[]) {
+  let message = 'Just now';
 
   for (const range of ranges) {
-    const diff = u.diff(m, range);
+    const diff = until.diff(since, range);
     if (diff > 0) {
       const ps = diff === 1 ? range : range + 's';
       message = `${diff} ${ps} ago`;
       break;
     }
   }
-
-  if (!message) message = 'Just now';
 
   return message;
 }

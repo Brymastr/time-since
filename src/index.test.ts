@@ -1,5 +1,6 @@
 import moment from 'moment';
 import since from './index';
+import { Options, Range } from './types';
 
 describe('since', () => {
   describe('years', () => {
@@ -115,22 +116,149 @@ describe('since', () => {
     });
   });
   describe('hours', () => {
-    test.todo(`'1 hour ago' given date just over one hour ago`);
-    test.todo(`'2 hours ago' given date just over two hours ago`);
-    test.todo(`'23 hours ago' given date just under one day ago`);
-    test.todo(`'6 hours ago' given date 6 hours ago but spanning midnight`);
+    test(`'1 hour ago' given date just over one hour ago`, () => {
+      const x = moment('2020-07-29T08:59:00.000Z');
+      const y = moment('2020-07-29T10:00:00.000Z');
+
+      const diff = since(x, y);
+
+      expect(diff).toEqual('1 hour ago');
+    });
+    test(`'2 hours ago' given date just over two hours ago`, () => {
+      const x = moment('2020-07-29T07:59:00.000Z');
+      const y = moment('2020-07-29T10:00:00.000Z');
+
+      const diff = since(x, y);
+
+      expect(diff).toEqual('2 hours ago');
+    });
+    test(`'23 hours ago' given date just under one day ago`, () => {
+      const x = moment('2020-07-29T00:58:00.000Z');
+      const y = moment('2020-07-29T23:59:00.000Z');
+
+      const diff = since(x, y);
+
+      expect(diff).toEqual('23 hours ago');
+    });
+    test(`'6 hours ago' given date 6 hours ago but spanning midnight`, () => {
+      const x = moment('2020-07-28T20:58:00.000Z');
+      const y = moment('2020-07-29T03:00:00.000Z');
+
+      const diff = since(x, y);
+
+      expect(diff).toEqual('6 hours ago');
+    });
   });
   describe('minutes', () => {
-    test.todo(`'1 minute ago' given date just over one minute ago`);
-    test.todo(`'2 minutes ago' given date just over two minutes ago`);
-    test.todo(`'59 minutes ago' given date just under one hour ago`);
+    test(`'1 minute ago' given date just over one minute ago`, () => {
+      const x = moment('2020-07-29T20:08:59.000Z');
+      const y = moment('2020-07-29T20:10:00.000Z');
+
+      const diff = since(x, y);
+
+      expect(diff).toEqual('1 minute ago');
+    });
+    test(`'2 minutes ago' given date just over two minutes ago`, () => {
+      const x = moment('2020-07-29T20:07:59.000Z');
+      const y = moment('2020-07-29T20:10:00.000Z');
+
+      const diff = since(x, y);
+
+      expect(diff).toEqual('2 minutes ago');
+    });
+    test(`'59 minutes ago' given date just under one hour ago`, () => {
+      const x = moment('2020-07-29T20:00:00.000Z');
+      const y = moment('2020-07-29T20:59:59.000Z');
+
+      const diff = since(x, y);
+
+      expect(diff).toEqual('59 minutes ago');
+    });
   });
   describe('seconds', () => {
-    test.todo(`'1 second ago' given date just over one second ago`);
-    test.todo(`'2 seconds ago' given date just over two seconds ago`);
-    test.todo(`'59 seconds ago' given date just under one minute ago`);
+    const ranges: Options['ranges'] = ['year', 'month', 'week', 'day', 'hour', 'minute', 'second'];
+    test(`'1 second ago' given date just over one second ago`, () => {
+      const x = moment('2020-07-29T20:10:08.900Z');
+      const y = moment('2020-07-29T20:10:10.000Z');
+
+      const diff = since(x, y, { ranges });
+
+      expect(diff).toEqual('1 second ago');
+    });
+    test(`'2 seconds ago' given date just over two seconds ago`, () => {
+      const x = moment('2020-07-29T20:10:07.900Z');
+      const y = moment('2020-07-29T20:10:10.000Z');
+
+      const diff = since(x, y, { ranges });
+
+      expect(diff).toEqual('2 seconds ago');
+    });
+    test(`'59 seconds ago' given date just under one minute ago`, () => {
+      const x = moment('2020-07-29T20:10:00.000Z');
+      const y = moment('2020-07-29T20:10:59.900Z');
+
+      const diff = since(x, y, { ranges });
+
+      expect(diff).toEqual('59 seconds ago');
+    });
   });
   describe('from now', () => {
-    test.todo(`anything given only one parameter`);
+    test(`anything given only one parameter`, () => {
+      const y = moment();
+      const x = moment(y).subtract(2, 'days');
+
+      const diff = since(x, y);
+
+      expect(diff).toEqual('2 days ago');
+    });
+    test(`works with strings`, () => {
+      const y = moment();
+      const x = moment(y).subtract(2, 'days');
+
+      const diff = since(x.format(), y.format());
+
+      expect(diff).toEqual('2 days ago');
+    });
+  });
+  describe('readme examples', () => {
+    const now = '2020-01-01';
+    test(`'1 year ago'`, () => {
+      const diff = since('2018-06-15', now);
+
+      expect(diff).toEqual('1 year ago');
+    });
+    test(`'6 months ago'`, () => {
+      const diff = since('2019-06-15', now);
+
+      expect(diff).toEqual('6 months ago');
+    });
+    test(`'15 minutes ago'`, () => {
+      const diff = since('2019-12-31T23:44:52', now);
+
+      expect(diff).toEqual('15 minutes ago');
+    });
+    test(`'just now'`, () => {
+      const diff = since('2019-12-31T23:59:43.035', now);
+
+      expect(diff).toEqual('Just now');
+    });
+    test(`'6 months ago'`, () => {
+      const diff = since('2018-06-15', '2019-01-01');
+
+      expect(diff).toEqual('6 months ago');
+    });
+    test(`'custom ranges'`, () => {
+      const ranges: Range[] = ['month', 'day', 'minute'];
+
+      const monthsSince = since('2018-06-15', '2020-01-01', { ranges });
+      const daysSince = since('2019-12-09', '2020-01-01', { ranges });
+      const minutesSince = since('2019-12-31T22:14:00', '2020-01-01', { ranges });
+      const justNow = since('2019-12-31T23:59:43.035', '2020-01-01', { ranges });
+
+      expect(monthsSince).toEqual('18 months ago');
+      expect(daysSince).toEqual('23 days ago');
+      expect(minutesSince).toEqual('106 minutes ago');
+      expect(justNow).toEqual('Just now');
+    });
   });
 });
